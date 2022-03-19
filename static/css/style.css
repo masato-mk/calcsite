@@ -1,10 +1,17 @@
 .main {
     box-sizing: border-box;
-    margin-left: 400px;
+    margin-left: min(400px);
     padding: 10px 40px;
     margin-top: 70px;
+    width: auto;
+
+    min-width: 500px;
 }
 
+div.input_style{
+    padding-left: 12%;
+
+}
 
 #sidebar{
     margin-left: 10px;

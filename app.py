@@ -1,19 +1,17 @@
-from flask import Flask, render_template, redirect, request, flash,jsonify
+from flask import Flask, render_template, redirect, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 import io
 import numpy as np
-from matplotlib.backends.backend_agg import FigureCanvasAgg
 from io import BytesIO
-from matplotlib.figure import Figure
 import base64
-
-
+import iapws
+import pandas as pd
+from parameter import iapws97_Region4_P,iapws97_Region4_T
 
 app = Flask(__name__)
-app.secret_key = 'hogehoge'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 db = SQLAlchemy(app)
 
@@ -52,7 +50,6 @@ def graph():
             Rb_list = [float(n) for n in Rb_list ]
             Sr_list = [float(n) for n in Sr_list ]
             n = len(Rb_list)
-
             x = Rb_list
             y = Sr_list
 
@@ -85,28 +82,89 @@ def graph():
             return render_template('error.html')
 
 
-@app.route('/input')
-def input():
-    return render_template('geochemi/input.html')
+@app.route('/steamtable', methods=['GET', 'POST'])
+def steam():
+    return render_template('steam/steamtable.html')
 
-@app.route('/delete/<int:id>')
-def delete(id):
-    post = Post.query.get(id)
-    db.session.delete(post)
-    db.session.commit()
-    return redirect('/')
 
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
-    post = Post.query.get(id)
-    if request.method == 'GET':
-        return render_template('geochemi/update.html', post=post)
+@app.route('/steamtableresult', methods=['GET', 'POST'])
+def steamresult():
+    if request.method == 'POST':
+        try:
+            temp = request.form.get('temp')
+            temp = float(temp)
+            Psa = iapws97_Region4_P(temp)
+            Psg = round(Psa,7) - 0.101325
+            Psg = round(Psa,5)
 
-    else:
-        post.Rb = request.form.get('Rb')
-        post.Sr = request.form.get('Sr')
-        db.session.commit()
-        return redirect('/')
+            waterpara = iapws.iapws97._Region1(temp+273.15, Psa)
+            steam_parameter = iapws.iapws97._Region2(temp+273.15, Psa)
+
+            sv_s = round(1/steam_parameter['v'],5)
+            sh_s = round(steam_parameter['h'],3)
+            cp_s = round(steam_parameter['cp'],4)
+            cv_s = round(steam_parameter['cv'],4) 
+            w_s =  round(steam_parameter['w'],3)
+            alfav_s = round(steam_parameter['alfav'],7)
+            kt_s =  round(steam_parameter['kt'],3)
+            
+            sv_w = round(waterpara['v'],6)
+            sh_w = round(waterpara['h'],3)
+            cp_w = round(waterpara['cp'],4)
+            cv_w = round(waterpara['cv'],4)
+            w_w = round(waterpara['w'],3)
+            alfav_w = round(waterpara['alfav'],7)
+            kt_w = round(waterpara['kt'],7)
+            
+            return render_template('steam/steamresult.html',
+                    Psa=Psa,temp=temp,sv_s=sv_s,sh_s=sh_s,cp_s=cp_s,cv_s=cv_s,w_s=w_s,
+                    alfav_s=alfav_s,kt_s=kt_s,sv_w=sv_w,sh_w=sh_w,cp_w=cp_w,cv_w=cv_w,w_w=w_w,
+                    alfav_w=alfav_w,kt_w=kt_w,Psg=Psg)
+        except ValueError:
+            return render_template('error.html')
+
+@app.route('/steamtable_pre', methods=['GET', 'POST'])
+def steam_pre():
+    return render_template('steam/steamtable_pre.html')
+
+@app.route('/steamtableresult_pre', methods=['GET', 'POST'])
+def steamresult_pre():
+    if request.method == 'POST':
+        try:
+            Psg = request.form.get('pressure')
+            Psg = float(Psg)
+            Psa = Psg + 0.101325
+            temp = iapws97_Region4_T(Psa)
+
+            waterpara = iapws.iapws97._Region1(temp+273.15, Psa)
+            steam_parameter = iapws.iapws97._Region2(temp+273.15, Psa)
+
+            temp = round(temp,3)
+            sv_s = round(1/steam_parameter['v'],5)
+            sh_s = round(steam_parameter['h'],3)
+            cp_s = round(steam_parameter['cp'],4)
+            cv_s = round(steam_parameter['cv'],4) 
+            w_s =  round(steam_parameter['w'],3)
+            alfav_s = round(steam_parameter['alfav'],7)
+            kt_s =  round(steam_parameter['kt'],3)
+            
+            sv_w = round(waterpara['v'],6)
+            sh_w = round(waterpara['h'],3)
+            cp_w = round(waterpara['cp'],4)
+            cv_w = round(waterpara['cv'],4)
+            w_w = round(waterpara['w'],3)
+            alfav_w = round(waterpara['alfav'],7)
+            kt_w = round(waterpara['kt'],7)
+            
+            return render_template('steam/steamresult_pre.html',
+                    Psa=Psa,temp=temp,sv_s=sv_s,sh_s=sh_s,cp_s=cp_s,cv_s=cv_s,w_s=w_s,
+                    alfav_s=alfav_s,kt_s=kt_s,sv_w=sv_w,sh_w=sh_w,cp_w=cp_w,cv_w=cv_w,w_w=w_w,
+                    alfav_w=alfav_w,kt_w=kt_w,Psg=Psg)
+        except ValueError:
+            return render_template('error.html')
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
