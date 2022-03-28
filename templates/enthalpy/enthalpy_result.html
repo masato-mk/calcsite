@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="main">
+    <div class="container">
+        <h2 class="l-main-ttl"  id="header1"><a href="/enthalpy_calc">蒸気熱水の等エンタルピー計算（温度基準）</a></h2>
+
+        <div>
+            <form class="row g-3" action="/enthalpy_calc_result"  method="POST" style="margin-left: 30px;">
+                <div class="mb-3 input_style" style="font-size: 20px;">
+                  <label  for="formFile" class="form-label" style="">飽和温度 Temperature（℃）</label>
+                  <input type="number" class=".form-control-lg" name="temp" step="0.001" max="400" min="-50" value="{{ psg }}">
+
+                  <br>
+                  <label  for="formFile" class="form-label" style="">蒸気量 (kg/h)</label>
+                  <input type="number" class=".form-control-lg" name="f_s" step="0.00001" min="0.0">
+                  <br>
+                  <label  for="formFile" class="form-label" style="">熱水量 (kg/h)</label>
+                  <input type="number" class=".form-control-lg" name="f_w" step="0.00001" min="0.0">
+                  <br>
+
+
+                  <label  for="formFile" class="form-label" style="">飽和温度 Temperature（℃）</label>
+                  <input type="number" class=".form-control-lg" name="temp2" step="0.001" max="400" min="-50" value="0">
+
+                  <button type="submit" value="claculation" class="btn btn-primary">claculation</button>
+                </div>
+            </form>
+        </div>
+
+        <hr size="5">
+
+        <div id="result_s">
+            <h2>Result</h2>
+            <p>乾き度 {{ x0 }}</p>
+            <p>減圧後の乾き度 {{ x1 }}</p>
+            <p>減圧後の蒸気量 {{ steam }}</p>
+            <p>減圧後の熱水量 {{ water }}</p>
+            <p>比エンタルピー {{ spefic_enthalpy }}</p>
+            <p>合計エンタルピー {{ total_enthalpy }}</p>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

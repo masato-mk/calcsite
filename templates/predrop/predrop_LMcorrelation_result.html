@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="main">
+    <div class="container">
+        <h2 class="l-main-ttl"  id="header1"><a href="/predrop_twophase_LM">二相流圧力損失（Lockhart-Martinelle）</a></h2>
+
+        <div>
+            <form class="row g-3" action="/predrop_twophase_LM_result"  method="POST" style="margin-left: 30px;">
+                <div class="mb-3 input_style" style="font-size: 20px;">
+                  <label  for="formFile" class="form-label" style="">飽和圧力 Pressure (MPaG)</label>
+                  <input type="number" class=".form-control-lg" name="pressure" step="0.0001" max="22" min="0" value="{{ psg }}">
+                  <br>
+                  <label  for="formFile" class="form-label" style="">蒸気量 (kg/h)</label>
+                  <input type="number" class=".form-control-lg" name="f_s" step="0.001" min="0.0" value="{{ f_s }}">
+                  <br>
+                  <label  for="formFile" class="form-label" style="">熱水量 (kg/h)</label>
+                  <input type="number" class=".form-control-lg" name="f_w" step="0.001" min="0.0" value="{{ f_w }}">
+                  <br>
+
+
+                  <label  for="formFile" class="form-label" style="">配管径</label>
+                  <select class="custom-select" id="inputGroupSelect01" name="piping">
+                    <option selected>{{ piping }}</option>
+                    <option>50A</option>
+                    <option>80A</option>
+                    <option>90A</option>
+                    <option>100A</option>
+                    <option>125A</option>
+                    <option>150A</option>
+                    <option>200A</option>
+                    <option>250A</option>
+                    <option>300A</option>
+                  </select>
+                  <br>
+                  <label  for="formFile" class="form-label" style="">スケジュール</label>
+                  <select class="custom-select" id="inputGroupSelect02" name="sh">
+                    <option selected>{{ sh }}</option>
+                    <option>sh20</option>
+                    <option>sh40</option>
+                    <option>sh80</option>
+                  </select>
+                  <br>
+                  <label  for="formFile" class="form-label" style="">配管長(m)</label>
+                  <input type="number" class=".form-control-lg" name="length" step="0.01" min="0" value="{{ length }}">
+
+                  <button type="submit" value="claculation" class="btn btn-primary">claculation</button>
+                </div>
+            </form>
+        </div>
+
+        <hr size="5">
+
+        <div id="result_s">
+            <h2>Result</h2>
+            <p>圧力損失損失 {{ predrop }} kPa</p>
+            <p>レイノルズ数（蒸気） {{ ReG }}</p>
+            <p>レイノルズ数（熱水） {{ ReL }}</p>
+            <p>流れ {{ status }}</p>
+            <p>温度 {{ temp }}</p>
+            <p>parameterX {{ parameterX }}</p>
+            <p>φL {{ φL }}</p>
+            <p>φG {{ φG }}</p>
+
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

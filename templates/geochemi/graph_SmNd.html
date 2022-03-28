@@ -3,17 +3,17 @@
 {% block body %}
 <div class="main">
     <div class="container">
-        <h2 class="l-main-ttl"  id="header1"><a href="/RbSr">同位体年代測定　Rb-Sr法</a></h2>
+        <h2 class="l-main-ttl"  id="header1"><a href="/SmNd">同位体年代測定　Sm-Nd法</a></h2>
         <div id="base">
             <h3>同位体年代測定の基本式</h3>
             <div id="f">
                 <div>
                     \[
-                        \frac{87Sr}{86Sr} = 
-                        \left(\frac{87Sr}{86Sr}\right)_0  + \frac{87Rb}{86Sr} \left(e^{λt}-1\right)
+                        \frac{143Nd}{144Nd} = 
+                        \left(\frac{143Nd}{144Nd}\right)_0  + \frac{147Sm}{144Nd} \left(e^{λt}-1\right)
                     \]
                     \[
-                        壊変定数　λ_β = 1.42 \times 10^{-11} yr^{-1}
+                        壊変定数　λ_α = 6.54 \times 10^{-12}
                     \]
                 </div>
             </div>
@@ -24,8 +24,8 @@
             <thread>
                 <tr class="">
                     <th scope="col">#</th>
-                    <th scope="col">87Sr/86Sr</th>
-                    <th scope="col">87Rb/86Sr</th>
+                    <th scope="col">143Nd/144Nd</th>
+                    <th scope="col">147Sm/144Nd</th>
 
                 </tr>
             </thread>
@@ -35,8 +35,8 @@
                 {% for i in range(0,n) %}
                     <tr>
                         <td> {{ i }}</td>
-                        <td>{{ Sr_list[i] }}</td>
-                        <td>{{ Rb_list[i] }}</td>
+                        <td>{{ Nd_list[i] }}</td>
+                        <td>{{ Sm_list[i] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -50,8 +50,11 @@
                 <h5>アイソクロン</h5>
                 <div>
                     \[
-                        \frac{87Sr}{86Sr} = 
-                        {{ b }}  + \frac{87Rb}{86Sr} \left({{ a }}\right)
+                        \frac{143Nd}{144Nd} = 
+                        \left(\frac{143Nd}{144Nd}\right)_0  + \frac{147Sm}{144Nd} \left(e^{λt}-1\right)
+                    \]
+                    \[
+                        壊変定数　λ_α = 6.54 \times 10^{-12}
                     \]
                 </div>
                 <br>
@@ -78,7 +81,7 @@
                 <h5>初期値（切片）</h5>
                 <div id="b">
                     \[
-                        \left(\frac{87Sr}{86Sr}\right)_0 = {{ b }}
+                        \left(\frac{143Nd}{144Nd}\right)_0 = {{ b }}
                     \]
                 </div>
             </div>
