@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<link rel="stylesheet" href="static/css/table.css">
+
+<div class="main">
+    <div class="container">
+        <h2 class="l-main-ttl"  id="header1"><a href="/twofhase_property">蒸気・水の二相流の見かけ物性値</a></h2>
+
+        <div>
+            <form class="row g-3" action="/twofhase_property_result"  method="POST" style="margin-left: 30px;">
+                <div class="mb-3 input_style" style="font-size: 20px;">
+                  <label  for="formFile" class="form-label" style="">飽和圧力温度 Pressure (MPaG)</label>
+                  <input type="number" class=".form-control-lg" name="pressure" step="0.00001" max="22" min="0.0007">
+                  <label  for="formFile" class="form-label" style="">乾き度</label>
+                  <input type="number" class=".form-control-lg" name="x" step="0.0001" max="1" min="0">
+                  <button type="submit" value="claculation" class="btn btn-primary">claculation</button>
+                </div>
+            </form>
+        </div>
+        <hr size="5">
+
+        <div id="result">
+            <h2>Result</h2>
+            <h3>二相流物性値</h3>
+            <table>
+                <tr>
+                    <th>飽和温度[MPaG]<br>Temperature</th>
+                    <th>飽和比エンタルピー[kJ/kg]<br>Specific enthalpy</th>
+                    <th>飽和密度[kg/m³]<br>Specific density</th>
+                    <th>飽和比エントロピー[kJ/kgK]<br>Specific entropy</th>
+                <tr>
+                    <td>{{ temp }}</td>
+                    <td>{{ h }}</td>
+                    <td>{{ v }}</td>
+                    <td>{{ s }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <hr size="5">
+        <br>
+
+        <div class="howtocalc">
+            <h3>計算方法</h3>
+            <div class="" id="" style="">
+                <div style="font-size: 20px; margin-left: 2%;">
+                    <p>
+                        この飽和蒸気表は、Wagner et al. (2000)に基づいて作成された実用国際蒸気状態式IAPWS-IF97によって計算された飽和蒸気表である。
+                    </p>
+                    <p>
+                        IAPWS-IF97は273.15 K から2273.15 K で適用可能である。
+                        適用可能圧力は1073.15 K までは100 MPaまでであり, 1073.15 K を超えると10 MPa まで適用可能である。
+                    </p>
+                    <p>
+                        以下は、飽和蒸気圧力から飽和蒸気温度を求める計算式である。
+                    </p>
+                </div>
+
+                <div>
+                    <h4>飽和蒸気圧力から飽和蒸気温度の算出式</h4>
+
+                    \[
+                        \begin{pmatrix}
+                            n_1 \\ n_2 \\ n_3 \\ n_4 \\ n_5 \\
+                            n_6 \\ n_7 \\ n_8 \\ n_9 \\ n_{10} \\
+                        \end{pmatrix}
+                        =
+                        \begin{pmatrix}
+                            1.1670521 \times 10^3 \\
+                            -7.2421317 \times 10^5 \\
+                            -1.7073847 \times 10^1 \\
+                            1.2020825 \times 10^4 \\
+                            -3.2325550 \times 10^6 \\
+                            1.4915109 \times 10^1 \\
+                            -4.8232657 \times 10^3 \\
+                            4.0511341 \times 10^5 \\
+                            -2.3855558 \times 10^{-1} \\
+                            6.5017535 \times 10^2 \\
+                        \end{pmatrix}
+                    \]
+                    <br>
+
+                    \[ β = \left(\frac{Ps}{P^*}\right)^{\frac{1}{4}}  \]
+
+                    \[ E = β^2 + n_3β + n_6 \]
+
+                    \[ F = n_1β^2 + n_4β + n_7 \]
+
+                    \[ G = n_2β^2 + n_5β + n_8 \]
+
+                    \[ D = \frac{2G}{-F-\sqrt{F^2-4EG}} \]
+                    <br>
+
+                    \[ Ts = T^*\frac{n_{10}+D-\left[\left(n_{10}+D\right)^2 - 4 \left(n_9+n_{10}D\right)\right]^{\frac{1}{2}}}{2} \]
+                    
+                </div> 
+            </div>
+            <hr size="5">
+        </div>
+
+
+    </div>
+    
+</div>
+
+{% endblock %}

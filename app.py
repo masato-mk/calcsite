@@ -43,6 +43,14 @@ def home():
 def home2():
     return render_template('home.html')
 
+@app.route('/policy')
+def policy():
+    return render_template('policy.html')
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
 
 # ---------------isochron-------------------------------
 @app.route('/RbSr', methods=['GET', 'POST'])
@@ -145,8 +153,8 @@ def steamresult():
         try:
             temp = request.form.get('temp')
             temp = float(temp)
-            Psa = iapws97_Region4_P(temp)
-            Psg = round(Psa,7) - 0.101325
+            Psa = iapws.iapws97._PSat_T(temp+273.15)
+            Psg = Psa - 0.101325
             Psg = round(Psa,5)
 
             waterpara = iapws.iapws97._Region1(temp+273.15, Psa)
@@ -160,7 +168,7 @@ def steamresult():
             alfav_s = round(steam_parameter['alfav'],7)
             kt_s =  round(steam_parameter['kt'],3)
             
-            sv_w = round(waterpara['v'],6)
+            sv_w = round(1/waterpara['v'],6)
             sh_w = round(waterpara['h'],3)
             cp_w = round(waterpara['cp'],4)
             cv_w = round(waterpara['cv'],4)
@@ -186,12 +194,12 @@ def steamresult_pre():
             Psg = request.form.get('pressure')
             Psg = float(Psg)
             Psa = Psg + 0.101325
-            temp = iapws97_Region4_T(Psa)
+            temp = iapws.iapws97._TSat_P(Psa)
 
-            waterpara = iapws.iapws97._Region1(temp+273.15, Psa)
-            steam_parameter = iapws.iapws97._Region2(temp+273.15, Psa)
+            waterpara = iapws.iapws97._Region1(temp, Psa)
+            steam_parameter = iapws.iapws97._Region2(temp, Psa)
 
-            temp = round(temp,3)
+            temp = round(temp-273.15,3)
             sv_s = round(1/steam_parameter['v'],5)
             sh_s = round(steam_parameter['h'],3)
             cp_s = round(steam_parameter['cp'],4)
@@ -214,6 +222,24 @@ def steamresult_pre():
                     alfav_w=alfav_w,kt_w=kt_w,Psg=Psg)
         except ValueError:
             return render_template('error.html')
+
+@app.route('/twofhase_property', methods=['GET', 'POST'])
+def twofhase_property():
+    return render_template('steam/twofhase_property.html')
+
+@app.route('/twofhase_property_result', methods=['GET', 'POST'])
+def twofhase_property_result():
+    Psg = request.form.get('pressure')
+    x = request.form.get('x')
+    Psg = float(Psg)
+    Psa = Psg + 0.101325
+    x = float(x)
+
+    parameter = iapws.iapws97._Region4(Psa, x)
+
+    return render_template('steam/twofhase_property_result.html',
+                    Psa=Psa,Psg=Psg,temp=parameter['T']-273.15,v=1/parameter['v'],h=parameter['h'],
+                    s=parameter['s'],x=x)
 
 
 # ---------------enthalpy-------------------------------
@@ -286,8 +312,6 @@ def enthalpy_result_pre():
         # except ValueError:
         #     return "<p>ValueError</p>"
 
-
-
 # ---------------pressureloss-------------------------------
 @app.route('/predrop_twophase_homo', methods=['GET', 'POST'])
 def predrop_twophase_homo():
@@ -317,7 +341,6 @@ def predrop_twophase_homo_result():
 
         # except ValueError:
         #     return "<p>ValueError</p>"
-
 
 @app.route('/predrop_twophase_LM', methods=['GET', 'POST'])
 def predrop_twophase_LM():
