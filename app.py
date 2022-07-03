@@ -18,10 +18,18 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 db = SQLAlchemy(app)
 
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    Rb = db.Column(db.Float, nullable=False)
-    Sr = db.Column(db.Float, nullable=False)
+# class Post(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     Rb = db.Column(db.Float, nullable=False)
+#     Sr = db.Column(db.Float, nullable=False)
+
+class contactinfo:
+    def __init__(self,name,adress,Email,tell,contents):
+        self.name = name
+        self.adress = adress
+        self.Email = Email
+        self.tell = tell
+        self.contents = contents
 
 def fig_to_base64_img(fig):
     """画像を base64 に変換する。
@@ -50,6 +58,39 @@ def policy():
 @app.route('/terms')
 def terms():
     return render_template('terms.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+@app.route('/contact_result',methods=['GET', 'POST'])
+def contact_result():
+    print(request.method)
+    if request.method == 'POST':
+        print(request.full_path)
+        print(request.method)
+        print(request.form)
+        contact_info = contactinfo(
+            request.form.get('name'),
+            request.form.get('adress'),
+            request.form.get('Email'),
+            request.form.get('tell'),
+            request.form.get('contents'),
+        )
+        return render_template('contact_result.html',contact_info=contact_info)
+
+    else:
+        print(request.full_path)
+        print(request.method)
+        print(request.args)
+        contact_info = contactinfo(
+            request.args.get('name'),
+            request.args.get('adress'),
+            request.args.get('Email'),
+            request.args.get('tell'),
+            request.args.get('contents'),
+        )
+        return render_template('contact_result.html',contact_info=contact_info)
 
 
 # ---------------isochron-------------------------------
@@ -270,7 +311,7 @@ def enthalpy_result():
             return render_template('enthalpy/enthalpy_result.html',
                 x0=round(x0,5),x1=round(x1,5),steam=round(steam,3),water=round(water,3),
                 spefic_enthalpy=round(spefic_enthalpy,3),total_enthalpy=round(total_enthalpy,3),
-                temp=round(temp,2),psg=round(psg,4),f_s=round(f_s,4),f_w=round(f_w,3),temp2=round(temp2,2),psg2=round(psg2,4))
+                temp=temp,psg=round(psg,4),f_s=f_s,f_w=f_w,temp2=temp2,psg2=round(psg2,4))
 
         except ValueError:
             return "<p>ValueError</p>"
